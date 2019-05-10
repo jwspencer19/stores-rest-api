@@ -132,3 +132,24 @@ heroku login
 
 # heroku logs --app=spencer19-stores-rest-api
 
+
+-----
+Start separate Postgres Docker image
+
+mkdir -p C:\Temp\postgres_volume
+
+# not working on windows with a volume
+docker run --rm   --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v c:/Temp/postgres_volume:/var/lib/postgresql/data  postgres:latest
+
+docker run --rm  --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 postgres:latest
+
+
+-----
+Create and Run Docker image
+
+docker build --tag=rest-section6 .
+
+docker run -p 4000:5000 rest-section6
+
+----
+

@@ -11,6 +11,7 @@ from resources.store import Store, StoreList
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+# DATABASE_URL=postgresql://postgres:docker@localhost:5432/postgre
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # in real production we would not put this here
@@ -34,4 +35,5 @@ if __name__ == '__main__':
         db.create_all()
 
     # app.run(port=5000)
-    app.run(port=5000, debug=True)
+    # app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
