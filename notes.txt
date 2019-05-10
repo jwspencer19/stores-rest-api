@@ -1,0 +1,134 @@
+Section 3
+
+code for section
+https://github.com/schoolofcode-me/rest-api-sections/tree/master/section3
+
+requirement:
+pip install flask
+
+-----
+# Create helloworld test docker image
+
+docker build --tag=mytest01 .
+
+docker run -p 4001:80 mytest01
+
+-----
+
+Section 4 and Section 5
+
+#code for this section
+https://github.com/schoolofcode-me/rest-api-sections/tree/master/section4
+https://github.com/schoolofcode-me/rest-api-sections/tree/master/section5
+
+Creating virtual environments
+
+# In DOS command shell
+cd C:\Spence\PycharmProjects\Rest
+pip3.7 install virtualenv
+mkdir section4
+cd section4
+
+# create the virtual environment
+virtualenv venv --python=python3.7
+
+# activate the virtual environment
+venv\Scripts\activate.bat
+
+# on Linux to activate the virtual environment
+source venv/bin/activate
+
+# should now see (venv) at beginning of prompt
+
+# to deactivate virtual environment
+deactivate
+
+# list packages in virtual environment
+pip list
+
+# -or
+pip freeze
+
+# add package to virtual environment
+pip install Flask-RESTful
+pip install Flask-JWT
+
+-----
+
+Section 6
+
+https://github.com/schoolofcode-me/rest-api-sections/tree/master/section6
+
+-----
+
+Section 7 - Git
+
+cd C:\Spence\PycharmProjects\Rest\section7\code
+
+# init a git repository
+git init
+
+git status
+
+git add app.py
+
+git commit -m "Created a simple Flash application"
+
+create test-repository on Github.com
+
+# push an existing repository from the command line
+git remote add origin https://github.com/jwspencer19/test-repository.git
+# probably fail since we just created it
+git push
+# run this command instead
+git push --set-upstream origin master
+
+# create ssh key and load to github
+
+# remove existing origin
+git remote remove origin
+
+# add new origin using ssh 
+git remote add origin git@github.com:jwspencer19/test-repository.git
+
+
+-----
+
+Section 8 - Heroku
+
+https://github.com/schoolofcode-me/stores-rest-api
+
+cd C:\Spence\PycharmProjects\Rest\section6\code
+# create .gitignore file with these following:
+__pycache__/
+*.pyc
+
+# create local repository
+git init
+
+git add *
+git add .gitignore
+git commit -m "First commit, added REST API to access items, stores, and user authentication."
+git status
+
+# create repository stores-rest-api on Github
+
+# push our local repository to Github
+git remote add origin git@github.com:jwspencer19/stores-rest-api.git
+git push -u origin master
+
+# many steps in video to setup and deploy to Heroku
+
+# URL generated after deploying
+https://spencer19-stores-rest-api.herokuapp.com/
+
+# Heroku Dev Center
+https://devcenter.heroku.com/articles/heroku-command-line
+
+# install command-line
+
+# login from new command box
+heroku login
+
+# heroku logs --app=spencer19-stores-rest-api
+
