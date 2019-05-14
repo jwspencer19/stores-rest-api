@@ -139,9 +139,14 @@ Start separate Postgres Docker image
 mkdir -p C:\Temp\postgres_volume
 
 # not working on windows with a volume
-docker run --rm   --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v c:/Temp/postgres_volume:/var/lib/postgresql/data  postgres:latest
+docker run --rm   --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v c:/Temp/postgres_volume:/var/lib/postgresql/data  postgres:latesth
 
+# volume on Linux
+docker run --rm  --name pg-docker -e POSTGRES_PASSWORD=docker -v /home/spencer/postgres_data:/var/lib/postgresql/data -d -p 5432:5432 postgres:latest
+
+# no volume
 docker run --rm  --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 postgres:latest
+
 
 
 -----
@@ -150,6 +155,10 @@ Create and Run Docker image
 docker build --tag=rest-section6 .
 
 docker run -p 4000:5000 rest-section6
+
+docker run --name rest-test -d -p 4000:5000 rest-section6
+
+docker run --name rest-test -e DATABASE_URL=postgresql://postgres:docker@BDS-208-71:5432/postgres -d -p 4000:5000 rest-section6
 
 ----
 
