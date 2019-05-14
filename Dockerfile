@@ -15,7 +15,7 @@ EXPOSE 5000
 
 # Define environment variable
 ENV NAME="Rest Section 6"
-ENV DATABASE_URL=postgresql://postgres:docker@bosspencerj:5432/postgres
+# ENV DATABASE_URL=postgresql://postgres:docker@bosspencerj:5432/postgres
 
 # Run app.py when the container launches
 CMD ["python", "app.py"]
