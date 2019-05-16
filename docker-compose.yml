@@ -6,6 +6,8 @@ services:
      - "4000:5000"
     environment:
      - DATABASE_URL=postgresql://postgres:docker@BDS-208-71:5432/postgres
+    depends_on:
+     - database
   database:
     image: postgres
     ports:
