@@ -117,6 +117,23 @@ git status
 git remote add origin git@github.com:jwspencer19/stores-rest-api.git
 git push -u origin master
 
+# better to create a branch and work in branch and then merge to master
+git branch feature/item-categories
+git checkout feature/items-categories
+git status
+
+# to merge our branch changes to master
+git checkout master
+git merge feature/item-categories
+git push
+
+# delete the branch
+git branch -d feature/item-categories
+
+# create a new branch to work
+git branch feature/my-next-branch
+git checkout feature/my-next-branch
+
 # many steps in video to setup and deploy to Heroku
 
 # URL generated after deploying
@@ -131,6 +148,230 @@ https://devcenter.heroku.com/articles/heroku-command-line
 heroku login
 
 # heroku logs --app=spencer19-stores-rest-api
+
+-----
+
+Section 9
+
+Install Postgres on Linux system
+
+Digital Ocean
+Two free months
+https://m.do.co/c/d54c088544ed
+
+Using my CentOS system instead:
+
+# install postgres on Centos
+yum install postgresql-server postgresql-contrib
+
+# install postgre on Ubuntu
+apt-get install postgresql postgresql-contrib
+
+# init the database
+postgresql-setup initdb
+
+# start the database
+systemctl start postgresql
+
+# optionally enable postgres to start on reboot automatically
+systemctl enable postgresql
+
+# run as postgres user
+sudo -i -u postgres
+psql
+\conninfo
+
+# create a user
+adduser jose
+
+# set password
+passwd jose
+usermod -aG wheel jose
+
+# escalate jose user - edit file add jose as root
+visudo
+# add the following under root
+jose    ALL=(ALL:ALL) ALL
+
+# allow jose to ssh to system
+vi /etc/ssh/sshd_config
+# add AllowUsers under PasswordAuthentication
+PasswordAuthentication yes
+AllowUsers jose
+
+# restart ssh service
+service sshd reload
+
+# ssh into system as jose
+ssh jose@ip-addr
+
+# to become root
+sudo su
+
+# as root, above, now become postgres user
+sudo -i -u postgres
+
+# create postgres user and set password
+createuser jose -P
+
+# create a database called jose
+createdb jose
+
+# exit twice to go back to jose user
+exit
+exit
+
+# as user jose, run psql should bring us jose db
+psql
+\conninfo
+You are connected to database "jose" as user "jose" via socket in "/var/run/postgresql" at port "5432"
+
+# note: if want to delete a db, must be postgres user to do that
+dropdb <name>
+
+# edit conf file to force requesting password for jose db
+vi /var/lib/pgsql/data/pg_hba.conf
+# or on ubuntu, it might be
+vi /etc/postgresql/9.5/main/pg_hba.conf
+# SPENCER:HERE
+# local   all             all                                     peer
+local   all             all                                     ident
+
+-----
+
+Section 9
+
+Install nginx - reverse proxy
+- act as a gateway between our app and external users
+- communicate with uwsgi to enable multi-threaded operation of our flask app
+- can run multiple of our flask apps in our server
+
+# on ubuntu
+sudo apt-get update
+sudo apt-get install nginx
+
+# firewall on ubuntu
+sudo ufw status
+# if inactive, enable it
+sudo ufw enable
+# open firewall for nginx
+sudo ufw allow 'Nginx HTTP'
+# open firewall for ssh - so we can still ssh into our system
+sudo ufw allow ssh
+
+# check if nginx is running (active)
+systemctl status nginx
+
+# on centos[nginx]
+# create this file
+vi /etc/yum.repos.d/nginx.repo
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/mainline/centos/7/$basearch/
+gpgcheck=0
+enabled=1
+
+sudo yum install nginx
+
+# firewall on centos - open port 80 and 443
+sudo firewall-cmd --permanent --zone=public --add-service=http
+sudo firewall-cmd --permanent --zone=public --add-service=https
+sudo firewall-cmd --reload
+
+# same commands on ubuntu and centos
+sudo systemctl start nginx
+sudo systemctl stop nginx
+sudo systemctl restart nginx
+sudo systemctl status nginx
+
+# verify that port 80 or 443 opened using ss command
+sudo ss -tulpn
+
+# get server ip address
+ip a
+
+# browser
+http://10.20.208.71/
+# or curl command
+curl http://10.20.208.71
+curl -I http://10.20.208.71
+# should see "Welcome to nginx!"
+
+# configure nginx for our rest api
+# add our rest api to nginx
+# unbuntu - create new file
+sudo vi /etc/nginx/sites-available/items-rest.conf
+# centos - create new file
+
+# add the following to the file
+sudo vi /etc/nginx/conf.d/items-rest.conf
+server {
+listen 80;
+real_ip_header X-Forwarded-For;
+set_real_ip_from 127.0.0.1;
+server_name localhost;
+
+locaton / {
+include uwsgi_params;
+# SPENCER: Change this to point my github clone that I already created
+#uwsgi_pass unix:/var/www/html/items-rest/socket.sock;
+uwsgi_pass unix:/home/spencer/Git_hub/stores-rest-api/socket.sock;
+uwsgi_modifier1 30;
+}
+
+error_page 404 /404.html;
+location = /404.html {
+root /usr/share/nginx/html;
+}
+
+error_page 500 502 503 504 /50x.html;
+location = /50x.html {
+root /usr/share/nginx/html;
+}
+}
+
+# unbunto soft-link the file
+sudo ln -s /etc/nginx/sites-available/items-rest.conf /etc/nginx/sites-enabled/
+
+# make the directory structure
+sudo mkdir /var/www/html/items-rest
+# SPENCER: I'm using my /home/spencer/Git_hub/stores-rest-api Git clone instead
+# sudo chown jose:jose /var/www/html/items-rest
+# cd /var/www/html/items-rest
+git clone https://github.com/../ .
+# instead
+cd /home/spencer/Git_hub/stores-rest-api
+mkdir log
+
+# ubuntu install python
+sudo apt-get install python-pip python3-dev libpq-dev
+
+# centos install python
+yum install centos-release-scl
+yum install rh-python36
+# still version 2.x
+python --version
+
+scl enable rh-python36 bash
+# now 3.x, note: only set in this shell session. Exit session will go back to 2.x
+python --version
+
+# install virtualenv
+pip install virtualenv
+
+# create the virtual environment
+cd /home/spencer/Git_hub/stores-rest-api
+virtualenv venv --python=python3.6
+
+# activate our virtual environment
+source venv/bin/activate
+
+# note: on my centos system, it could not find gcc
+yum install gcc
+# to fix libpq error
+yum install postgresql-devel
+
+pip install -r requirements.txt
 
 
 -----
