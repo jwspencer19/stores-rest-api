@@ -258,6 +258,8 @@ sudo ufw enable
 sudo ufw allow 'Nginx HTTP'
 # open firewall for ssh - so we can still ssh into our system
 sudo ufw allow ssh
+# reload the firewall
+sudo ufw reload
 
 # check if nginx is running (active)
 systemctl status nginx
@@ -429,6 +431,10 @@ logto = /home/spencer/Git_hub/stores-rest-api/log/%n.log
 
 # start our service
 systemctl start uwsgi_items_rest
+
+# to restart nginx
+systemctl reload nginx
+systemctl restart nginx
 
 
 -----
