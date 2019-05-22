@@ -374,7 +374,67 @@ yum install postgresql-devel
 pip install -r requirements.txt
 
 
+# Setting up uWSGI
+
+# setup our service
+vi /etc/systemd/system/uwsgi_items_rest.service
+[Unit]
+Description=uWSGI items rest
+
+[Service]
+Environment=DATABASE_URL=postgres://jose:jose@localhost:5432/jose
+ExecStart=/home/spencer/Git_hub/stores-rest-api/venv/bin/uwsgi --master --emperor /home/spencer/Git_hub/stores-rest-api/uwsgi.ini --die-on-term --uid jose -gid jose --logto /home/spencer/Git_hub/stores-rest-api/log/emperor.log
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
+
+
+# edit uwsgi.ini
+vi /home/spencer/Git_hub/stores-rest-api/uwsgi.ini
+# delete this, this was for Heroku
+[uwsgi]
+http-socket = :$(PORT)
+master = true
+die-on-term = true
+module = run:app
+memory-report = true
+
+# replace with this:
+[uwsgi]
+base = /home/spencer/Git_hub/stores-rest-api/
+app = run
+module = %(app)
+
+home = %(base)/venv
+pythonpath = %(base)
+
+socket = %(base)/socket.sock
+
+chmod-socket = 777
+
+processes = 8
+
+threads = 8
+
+harakiri = 15
+
+callable = app
+
+logto = /home/spencer/Git_hub/stores-rest-api/log/%n.log
+
+
+# start our service
+systemctl start uwsgi_items_rest
+
+
 -----
+
+Separate Notes:
+
 Start separate Postgres Docker image
 
 mkdir -p C:\Temp\postgres_volume
